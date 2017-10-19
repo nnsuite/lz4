@@ -1,0 +1,41 @@
+From: Jan Engelhardt <jengelh@inai.de>
+Date: 2014-10-01 14:23:22.000000000 +0200
+References: https://github.com/Cyan4973/lz4/pull/195
+
+build: make programs use liblz too instead of duplicating object code.
+
+---
+ programs/Makefile |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: lz4-1.8.0/programs/Makefile
+===================================================================
+--- lz4-1.8.0.orig/programs/Makefile
++++ lz4-1.8.0/programs/Makefile
+@@ -41,7 +41,7 @@ LIBVER_MINOR := $(shell echo $(LIBVER_MI
+ LIBVER_PATCH := $(shell echo $(LIBVER_PATCH_SCRIPT))
+ LIBVER   := $(shell echo $(LIBVER_SCRIPT))
+ 
+-SRCFILES := $(wildcard $(LZ4DIR)/*.c) $(wildcard *.c)
++SRCFILES := $(wildcard *.c)
+ OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
+ 
+ CPPFLAGS += -I$(LZ4DIR) -DXXH_NAMESPACE=LZ4_
+@@ -76,14 +76,14 @@ all32: CFLAGS+=-m32
+ all32: all
+ 
+ lz4: $(OBJFILES)
+-	$(CC) $(FLAGS) $^ -o $@$(EXT)
++	$(CC) $(FLAGS) $^ -o $@$(EXT) -L${LZ4DIR} -llz4
+ 
+ lz4-release: DEBUGFLAGS=
+ lz4-release: lz4
+ 
+ lz4c32: CFLAGS += -m32
+ lz4c32 : $(SRCFILES)
+-	$(CC) $(FLAGS) $^ -o $@$(EXT)
++	$(CC) $(FLAGS) $^ -o $@$(EXT) -L${LZ4DIR} -llz4
+ 
+ lz4c: lz4
+ 	ln -s lz4 lz4c
+
